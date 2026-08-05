@@ -1,11 +1,30 @@
-# 🚀 DevMind AI
 
-> An AI Software Engineering Assistant built with LangChain, LangGraph, and Groq.
++-----------------------------------------------------------+
+|                     DevMind AI                            |
+|      AI Software Engineering Assistant                    |
+| LangChain • LangGraph • Groq • RAG • GitHub • Python      |
++-----------------------------------------------------------+
 
 DevMind AI understands software repositories, explains code, generates documentation, reviews pull requests, writes unit tests, and helps developers build software faster.
-
 ---
-
+                 User
+                  │
+                  ▼
+            DevMind AI
+                  │
+      ┌───────────┴────────────┐
+      │                        │
+Repository Scanner        AI Chat
+      │                        │
+      ▼                        ▼
+ Repository Loader        LangGraph
+      │                        │
+      ▼                        ▼
+ Embeddings             Tool Calling
+      │                        │
+      ▼                        ▼
+     FAISS  ◄──────────────► Groq
+     
 ## Features
 
 - 📂 Repository Intelligence
@@ -17,7 +36,7 @@ DevMind AI understands software repositories, explains code, generates documenta
 - 🔎 Code Review Assistant
 - ⚡ Groq LLM Integration
 - 🔗 LangChain + LangGraph
-- 🌐 Streamlit Interface (Coming Soon)
+- 🌐 Streamlit Interface
 
 ---
 
@@ -81,5 +100,12 @@ python main.py
 ---
 
 ## License
+![Python](https://img.shields.io/badge/Python-3.13-blue)
+
+![LangChain](https://img.shields.io/badge/LangChain-1.3-green)
+
+![LangGraph](https://img.shields.io/badge/LangGraph-Latest-orange)
+
+![License](https://img.shields.io/badge/license-MIT-red)
 
 MIT
