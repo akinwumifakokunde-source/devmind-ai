@@ -2,6 +2,8 @@ import os
 
 from dotenv import load_dotenv
 
+from agent.tools import tools
+
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage
 
@@ -18,7 +20,8 @@ class DevMindAgent:
             api_key=os.getenv("GROQ_API_KEY"),
             model=os.getenv("MODEL_NAME"),
             temperature=0.2,
-        )
+        ).bind_tools(tools)
+
 
         self.retriever = RepositoryRetriever()
 

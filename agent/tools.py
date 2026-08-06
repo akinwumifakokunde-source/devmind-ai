@@ -1,68 +1,53 @@
 from pathlib import Path
-from langchain_core.tools import tool
-from services.repository_scanner import RepositoryScanner
 
+from langchain_core.messages import HumanMessage
+from langchain_core.tools import tool
+
+from services.llm import get_llm
+from services.retriever import RepositoryRetriever
+
+retriever = RepositoryRetriever()
+llm = get_llm()
 
 IGNORE_DIRS = {
-    ".venv",
     ".git",
+    ".venv",
     "__pycache__",
     ".pytest_cache",
-    "node_modules",
     ".idea",
     ".vscode",
-}
-
-IGNORE_SUFFIXES = {
-    ".pyc",
-    ".pyo",
-    ".pyd",
 }
 
 
 @tool
 def list_files(directory: str = ".") -> str:
     """
-    List project files while ignoring virtual environments,
-    cache folders and IDE files.
+    List all project files while ignoring cache folders.
     """
 
     root = Path(directory)
-
-    if not root.exists():
-        return "Directory not found."
 
     files = []
 
     for path in root.rglob("*"):
 
-        # Skip ignored folders
         if any(part in IGNORE_DIRS for part in path.parts):
             continue
 
-        # Skip compiled files
-        if path.suffix in IGNORE_SUFFIXES:
-            continue
-
         if path.is_file():
-            files.append(str(path.relative_to(root)))
+            files.append(str(path))
 
     return "\n".join(sorted(files))
 
 
 @tool
-def read_file(file_path: str) -> str:
+def read_file(path: str) -> str:
     """
-    Read the contents of a text file.
+    Read a file from the repository.
     """
-
-    path = Path(file_path)
-
-    if not path.exists():
-        return f"File not found: {file_path}"
 
     try:
-        return path.read_text(
+        return Path(path).read_text(
             encoding="utf-8",
             errors="ignore",
         )
@@ -71,13 +56,85 @@ def read_file(file_path: str) -> str:
         return f"Error reading file: {e}"
 
 
+@tool
+def search_repository(query: str) -> str:
+    """
+    Perform semantic search over the repository.
+    """
+
+    return retriever.search(query)
+
 
 @tool
-def scan_repository() -> str:
+def explain_file(path: str) -> str:
     """
-    Scan the current repository.
+    Read a repository file and generate a professional explanation.
     """
 
-    scanner = RepositoryScanner()
+    try:
+        content = Path(path).read_text(
+            encoding="utf-8",
+            errors="ignore",
+        )
 
-    return str(scanner.summary())
+    except Exception as e:
+        return f"Error reading file: {e}"
+
+    prompt = f"""
+You are DevMind AI, an expert software engineer.
+
+Analyze the following source code.
+
+Return your answer using exactly this format.
+
+# Purpose
+
+A short summary.
+
+# Classes
+
+List every class and explain its responsibility.
+
+# Functions
+
+List every function and explain what it does.
+
+# Dependencies
+
+Explain imported libraries and modules.
+
+# Workflow
+
+Explain the execution flow from start to finish.
+
+# Improvements
+
+Suggest improvements following Python best practices.
+
+Rules:
+- Do NOT rewrite the source code.
+- Do NOT copy large portions of the code.
+- Explain the architecture and design.
+- Keep the explanation concise and professional.
+
+Source Code
+-----------
+
+{content}
+"""
+
+    response = llm.invoke(
+        [
+            HumanMessage(content=prompt)
+        ]
+    )
+
+    return response.content
+
+
+tools = [
+    list_files,
+    read_file,
+    search_repository,
+    explain_file,
+]

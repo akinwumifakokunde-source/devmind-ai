@@ -1,15 +1,29 @@
-from agent.tools import list_files, read_file
+from agent.tools import (
+    list_files,
+    read_file,
+    search_repository,
+)
 
 print("=" * 60)
-print("PROJECT FILES")
+print("LIST FILES")
 print("=" * 60)
 
-files = list_files.invoke({"directory": "."})
-print(files)
+print(list_files.invoke({}))
 
-print("\n" + "=" * 60)
-print("FIRST 500 CHARACTERS OF main.py")
+print()
+
+print("=" * 60)
+print("READ FILE")
 print("=" * 60)
 
-content = read_file.invoke({"file_path": "main.py"})
-print(content[:500])
+print(read_file.invoke({"path": "README.md"}))
+
+print()
+
+print("=" * 60)
+print("SEARCH")
+print("=" * 60)
+
+print(search_repository.invoke(
+    {"query": "RepositoryRetriever"}
+))
