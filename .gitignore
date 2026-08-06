@@ -31,3 +31,16 @@ Thumbs.db
 
 # FAISS index
 faiss_index/
+
+# Cloned repositories
+repositories/
+
+# Repository indexes
+**/.devmind_index/
+
+# Local FAISS indexes
+faiss_index/
+
+# Python cache
+__pycache__/
+*.pyc
