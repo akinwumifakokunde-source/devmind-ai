@@ -1,60 +1,76 @@
-import os
-
-from dotenv import load_dotenv
+import json
 
 from langchain_core.messages import AIMessage
-from langchain_groq import ChatGroq
 
-from services.retriever import RepositoryRetriever
+from services.llm import get_llm
 
-load_dotenv()
-
-retriever = RepositoryRetriever()
-
-llm = ChatGroq(
-    api_key=os.getenv("GROQ_API_KEY"),
-    model=os.getenv("MODEL_NAME"),
-    temperature=0.2,
-)
-
-
-def retrieve(state):
-
-    question = state["messages"][-1].content
-
-    context = retriever.search(question)
-
-    return {
-        "context": context
-    }
+llm = get_llm()
 
 
 def assistant(state):
 
-    question = state["messages"][-1].content
+    messages = state["messages"]
 
-    context = state["context"]
+    user_question = messages[-1].content
 
     prompt = f"""
 You are DevMind AI.
 
-You are an expert software engineer.
+You have access to these tools:
 
-Use ONLY the repository context.
+1. list_files
+Arguments:
+{{"directory": "."}}
 
-Repository:
+2. read_file
+Arguments:
+{{"path": "services/parser.py"}}
 
-{context}
+3. search_repository
+Arguments:
+{{"query": "..."}}
 
-Question:
+4. explain_file
+Arguments:
+{{"path": "services/parser.py"}}
 
-{question}
+Choose the BEST tool.
+
+Return ONLY valid JSON.
+
+Example:
+
+{{
+    "tool": "list_files",
+    "arguments": {{
+        "directory": "."
+    }}
+}}
+
+User:
+
+{user_question}
 """
 
     response = llm.invoke(prompt)
 
+    try:
+        tool_call = json.loads(response.content)
+
+    except Exception:
+
+        tool_call = {
+            "tool": "none",
+            "arguments": {}
+        }
+
     return {
         "messages": [
-            AIMessage(content=response.content)
+            AIMessage(
+                content=response.content,
+                additional_kwargs={
+                    "tool_call": tool_call
+                }
+            )
         ]
     }
