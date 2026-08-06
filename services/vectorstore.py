@@ -4,40 +4,40 @@ from langchain_community.vectorstores import FAISS
 
 from services.embeddings import get_embeddings
 
-INDEX_DIR = Path("faiss_index")
 
-
-def build_vectorstore(documents):
+def build_vectorstore(documents, index_dir: Path):
     """
-    Build or load a FAISS vector store.
+    Build or load a FAISS vector store for a specific repository.
     """
 
     embeddings = get_embeddings()
 
+    index_dir = Path(index_dir)
+
     if (
-        INDEX_DIR.exists()
-        and (INDEX_DIR / "index.faiss").exists()
-        and (INDEX_DIR / "index.pkl").exists()
+        index_dir.exists()
+        and (index_dir / "index.faiss").exists()
+        and (index_dir / "index.pkl").exists()
     ):
 
-        print("Loading existing FAISS index...")
+        print(f"Loading existing FAISS index: {index_dir}")
 
         return FAISS.load_local(
-            str(INDEX_DIR),
+            str(index_dir),
             embeddings,
             allow_dangerous_deserialization=True,
         )
 
-    print("Building new FAISS index...")
+    print(f"Building new FAISS index: {index_dir}")
 
     vectorstore = FAISS.from_documents(
         documents,
         embeddings,
     )
 
-    INDEX_DIR.mkdir(exist_ok=True)
+    index_dir.mkdir(parents=True, exist_ok=True)
 
-    vectorstore.save_local(str(INDEX_DIR))
+    vectorstore.save_local(str(index_dir))
 
     print("FAISS index saved.")
 

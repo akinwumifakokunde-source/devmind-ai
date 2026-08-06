@@ -1,32 +1,21 @@
 from pathlib import Path
 
-IGNORE_DIRS = {
-    ".git",
-    ".venv",
-    "__pycache__",
-    ".pytest_cache",
-    ".idea",
-    ".vscode",
-    ".mypy_cache",
-}
+from services.repository_scanner import RepositoryScanner
 
 
-def load_repository(root: str = ".") -> list[str]:
+def load_repository(path="."):
     """
-    Return all files in the repository while ignoring
-    virtual environments, Git folders, caches, etc.
+    Load all repository files from the specified path.
+
+    Args:
+        path (str | Path): Repository root directory.
+
+    Returns:
+        list[str]: List of repository file paths.
     """
 
-    files = []
+    scanner = RepositoryScanner(Path(path))
 
-    for path in Path(root).rglob("*"):
+    files = scanner.scan()
 
-        if not path.is_file():
-            continue
-
-        if any(part in IGNORE_DIRS for part in path.parts):
-            continue
-
-        files.append(str(path))
-
-    return files
+    return [str(file) for file in files]
