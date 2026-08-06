@@ -1,5 +1,8 @@
 from pathlib import Path
+
 from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 
 SUPPORTED_EXTENSIONS = {
     ".py",
@@ -12,9 +15,15 @@ SUPPORTED_EXTENSIONS = {
 }
 
 
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=700,
+    chunk_overlap=100,
+)
+
+
 def parse_repository(files: list[str]) -> list[Document]:
     """
-    Convert repository files into LangChain Documents.
+    Parse repository files into chunked LangChain documents.
     """
 
     documents = []
@@ -27,21 +36,27 @@ def parse_repository(files: list[str]) -> list[Document]:
             continue
 
         try:
+
             content = path.read_text(
                 encoding="utf-8",
                 errors="ignore",
             )
 
-            documents.append(
-                Document(
-                    page_content=content,
-                    metadata={
-                        "source": str(path),
-                        "file_name": path.name,
-                        "extension": path.suffix,
-                    },
-                )
+            metadata = {
+                "source": str(path),
+                "file_name": path.name,
+                "extension": path.suffix,
+            }
+
+            chunks = splitter.create_documents(
+                [content],
+                metadatas=[metadata],
             )
+
+            for i, chunk in enumerate(chunks):
+                chunk.metadata["chunk"] = i + 1
+
+            documents.extend(chunks)
 
         except Exception:
             continue

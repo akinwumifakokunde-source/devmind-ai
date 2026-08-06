@@ -5,9 +5,34 @@ from langchain_core.tools import tool
 
 from services.llm import get_llm
 from services.retriever import RepositoryRetriever
+from services.symbol_explainer import SymbolExplainer
+from services.symbol_index import SymbolIndexer
 
-retriever = RepositoryRetriever()
+
 llm = get_llm()
+
+# Repository-specific services (initialized later)
+retriever = None
+symbol_index = None
+symbol_explainer = None
+
+
+def initialize_tools(repository_path):
+    """
+    Initialize repository-specific services after a repository
+    has been cloned and indexed.
+    """
+    global retriever
+    global symbol_index
+    global symbol_explainer
+
+    retriever = RepositoryRetriever(repository_path)
+
+    symbol_index = SymbolIndexer()
+    symbol_index.build(repository_path)
+
+    symbol_explainer = SymbolExplainer(repository_path)
+
 
 IGNORE_DIRS = {
     ".git",
@@ -16,13 +41,18 @@ IGNORE_DIRS = {
     ".pytest_cache",
     ".idea",
     ".vscode",
+    ".devmind_index",
 }
 
+
+# ------------------------------------------------------------------
+# List Files
+# ------------------------------------------------------------------
 
 @tool
 def list_files(directory: str = ".") -> str:
     """
-    List all project files while ignoring cache folders.
+    List every project file.
     """
 
     root = Path(directory)
@@ -35,18 +65,26 @@ def list_files(directory: str = ".") -> str:
             continue
 
         if path.is_file():
-            files.append(str(path))
+            files.append(str(path.relative_to(root)))
+
+    if not files:
+        return "No files found."
 
     return "\n".join(sorted(files))
 
 
+# ------------------------------------------------------------------
+# Read File
+# ------------------------------------------------------------------
+
 @tool
 def read_file(path: str) -> str:
     """
-    Read a file from the repository.
+    Read a repository file.
     """
 
     try:
+
         return Path(path).read_text(
             encoding="utf-8",
             errors="ignore",
@@ -56,22 +94,37 @@ def read_file(path: str) -> str:
         return f"Error reading file: {e}"
 
 
+# ------------------------------------------------------------------
+# Semantic Search
+# ------------------------------------------------------------------
+
 @tool
-def search_repository(query: str) -> str:
+def search_repository(query: str) -> dict:
     """
-    Perform semantic search over the repository.
+    Search the repository semantically.
     """
+
+    if retriever is None:
+        return {
+            "context": "Repository has not been initialized.",
+            "sources": [],
+        }
 
     return retriever.search(query)
 
 
+# ------------------------------------------------------------------
+# Explain File
+# ------------------------------------------------------------------
+
 @tool
 def explain_file(path: str) -> str:
     """
-    Read a repository file and generate a professional explanation.
+    Explain an entire source file.
     """
 
     try:
+
         content = Path(path).read_text(
             encoding="utf-8",
             errors="ignore",
@@ -81,44 +134,35 @@ def explain_file(path: str) -> str:
         return f"Error reading file: {e}"
 
     prompt = f"""
-You are DevMind AI, an expert software engineer.
+You are DevMind AI.
 
-Analyze the following source code.
+You are an expert software engineer.
 
-Return your answer using exactly this format.
+Analyze this source code.
+
+Return:
 
 # Purpose
 
-A short summary.
-
 # Classes
-
-List every class and explain its responsibility.
 
 # Functions
 
-List every function and explain what it does.
-
 # Dependencies
-
-Explain imported libraries and modules.
 
 # Workflow
 
-Explain the execution flow from start to finish.
-
 # Improvements
 
-Suggest improvements following Python best practices.
+Rules
 
-Rules:
-- Do NOT rewrite the source code.
-- Do NOT copy large portions of the code.
-- Explain the architecture and design.
-- Keep the explanation concise and professional.
+- Do not rewrite the code.
+- Do not copy large sections.
+- Be concise.
+- Explain like a senior engineer.
 
 Source Code
------------
+===========
 
 {content}
 """
@@ -132,9 +176,71 @@ Source Code
     return response.content
 
 
+# ------------------------------------------------------------------
+# Find Symbol
+# ------------------------------------------------------------------
+
+@tool
+def find_symbol(name: str) -> str:
+    """
+    Find where a class, function or method is defined.
+    """
+
+    if symbol_index is None:
+        return "Repository has not been initialized."
+
+    results = symbol_index.find(name)
+
+    if not results:
+        return f"No symbol named '{name}' found."
+
+    lines = [
+        "=" * 60,
+        f"Symbol: {name}",
+        "=" * 60,
+        "",
+    ]
+
+    for i, result in enumerate(results, start=1):
+
+        lines.extend(
+            [
+                f"Match {i}",
+                f"Type : {result['type']}",
+                f"File : {result['file']}",
+                f"Line : {result['line']}",
+                "-" * 60,
+            ]
+        )
+
+    return "\n".join(lines)
+
+
+# ------------------------------------------------------------------
+# Explain Symbol
+# ------------------------------------------------------------------
+
+@tool
+def explain_symbol(name: str) -> str:
+    """
+    Explain a class, function or method.
+    """
+
+    if symbol_explainer is None:
+        return "Repository has not been initialized."
+
+    return symbol_explainer.explain(name)
+
+
+# ------------------------------------------------------------------
+# Registered Tools
+# ------------------------------------------------------------------
+
 tools = [
     list_files,
     read_file,
     search_repository,
     explain_file,
+    find_symbol,
+    explain_symbol,
 ]

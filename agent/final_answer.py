@@ -5,28 +5,36 @@ from services.llm import get_llm
 llm = get_llm()
 
 
-def generate_final_answer(question: str, tool_result: str):
+def generate_final_answer(question: str, tool_result: dict) -> str:
+    """
+    Generate a repository-aware answer.
+    """
+
+    context = tool_result["context"]
+    sources = tool_result["sources"]
 
     prompt = f"""
 You are DevMind AI.
 
-A tool has already been executed.
+Answer ONLY using the repository context.
 
-User Question
--------------
+If the answer is not available in the repository, say so.
+
+Repository Context
+==================
+
+{context}
+
+Question
+========
 
 {question}
 
-Tool Output
------------
+Return your answer using:
 
-{tool_result}
+# Summary
 
-Write a concise, professional answer.
-
-Do not mention tools.
-
-Summarize the result clearly.
+# Explanation
 """
 
     response = llm.invoke(
@@ -35,4 +43,13 @@ Summarize the result clearly.
         ]
     )
 
-    return response.content
+    answer = response.content.strip()
+
+    if sources:
+
+        answer += "\n\n# Sources\n"
+
+        for source in sources:
+            answer += f"\n- {source}"
+
+    return answer
