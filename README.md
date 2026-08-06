@@ -204,11 +204,6 @@ Contributions, feature requests, and pull requests are welcome.
 
 If you'd like to help improve DevMind, feel free to open an issue or submit a pull request.
 
----
-
-## License
-
-MIT License
 
 ---
 
