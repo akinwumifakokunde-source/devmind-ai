@@ -24,3 +24,8 @@ pandas
 numpy
 
 watchdog
+
+langchain-huggingface
+
+langchain-community
+faiss-cpu
