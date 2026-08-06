@@ -1,4 +1,4 @@
-# 🚀 DevMind AI
+# DevMind AI
 
 > Open-source AI Software Engineering Intelligence Platform for understanding, documenting, and analyzing code repositories.
 
