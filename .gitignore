@@ -35,6 +35,8 @@ faiss_index/
 # Cloned repositories
 repositories/
 
+
+
 # Repository indexes
 **/.devmind_index/
 
