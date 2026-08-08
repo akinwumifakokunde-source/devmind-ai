@@ -1,273 +1,217 @@
 # 🚀 DevMind AI
 
-> AI-powered software engineering platform for understanding, auditing, reviewing, and documenting code repositories.
+> Open-source AI software engineering platform for understanding repositories, analyzing architecture, reviewing code, detecting dependencies, and generating engineering insights.
 
-DevMind AI helps developers and engineering teams understand unfamiliar codebases using repository intelligence, graph analysis, retrieval-augmented generation (RAG), and large language models.
+[![Python](https://img.shields.io/badge/Python-3.13-blue)](https://www.python.org/)
+[![LangChain](https://img.shields.io/badge/LangChain-1.3-green)](https://www.langchain.com/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-AI%20Workflows-orange)](https://www.langchain.com/langgraph)
+[![License](https://img.shields.io/badge/license-MIT-red)](LICENSE)
 
----
+DevMind AI helps developers and engineering teams understand unfamiliar codebases by combining **repository intelligence, dependency graphs, architecture analysis, change-impact analysis, symbol intelligence, RAG, and AI-powered code review**.
 
-## ✨ Features
+## ✨ What DevMind Does
 
-### 🤖 AI Repository Assistant
+### 🤖 AI Repository Intelligence
 
-- Chat with any GitHub repository
+- AI-powered repository understanding
 - Semantic repository search (RAG)
-- Explain classes, functions, and methods
-- Find symbols instantly
-- Explain entire source files
+- Explain classes, functions, methods, and symbols
+- Explain complete source files
+- Symbol indexing and resolution
+- Repository-aware AI context
 
----
+### 🔗 Dependency Intelligence
 
-### 🏗 Repository Intelligence
+- Repository dependency graph
+- Direct and reverse dependencies
+- Dependency statistics
+- Circular dependency detection
+- Graph queries
+- Module resolution
+- Change-impact analysis
+- Direct and indirect dependency analysis
 
-- Repository Graph Builder
-- Module Resolver
-- Symbol Indexing
-- Symbol Explanation
-- Framework Detection
-- Entry Point Detection
-- Component Detection
+### 🏗️ Architecture Intelligence
 
----
-
-### 🔗 Dependency Analysis
-
-- Dependency Graph
-- Reverse Dependency Graph
-- Circular Dependency Detection
-- Repository Graph Queries
-- Impact Analysis
-- Dependency Statistics
-
----
-
-### 🏛 Architecture Analysis
-
-- Repository Health Analysis
-- Architecture Diagrams
-- Mermaid Diagram Generation
-- Engineering Architecture Reports
-- Repository Statistics
-
----
+- Repository health analysis
+- Architecture scoring
+- Architecture diagrams
+- Mermaid diagram generation
+- Repository statistics
+- Framework detection
+- Entry-point detection
+- Component detection
+- Engineering architecture reports
 
 ### 🧠 AI Engineering
 
-- AI Code Review
-- Repository Audit
-- Engineering Recommendations
-- Code Quality Analysis
-- Maintainability Assessment
-- Architecture Intelligence
+- AI code review
+- Repository audit
+- Code quality analysis
+- Maintainability assessment
+- Engineering recommendations
+- Architecture intelligence
+- Risk and impact assessment
 
----
+## ⚡ DevMind CLI
 
-## Repository Audit
+DevMind provides a command-line interface for repository intelligence.
 
-Run a complete engineering audit on any repository.
 
-```
-Repository
+                    DevMind CLI
+                         │
+        ┌────────────────┼────────────────┐
+        │                │                │
+      Audit            Review           Explain
+        │                │                │
+        └────────────────┼────────────────┘
+                         │
+                         ▼
+              Repository Intelligence
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+             ▼                       ▼
+       Symbol Intelligence      Graph Intelligence
+             │                       │
+             ▼                 ┌─────┴─────┐
+       Semantic Search         │           │
+             │              Dependencies  Cycles
+             │                 │           │
+             └─────────────────┼───────────┘
+                               ▼
+                       Impact Analysis
+                               │
+                               ▼
+                       Health Analysis
+                               │
+                               ▼
+                       AI Engineering
+                               │
+                               ▼
+                    Engineering Insights
 
-↓
 
-Repository Graph
+                    devmind-ai/
 
-↓
+ Project Structure
 
-Dependency Analysis
-
-↓
-
-Architecture Analysis
-
-↓
-
-Repository Health
-
-↓
-
-Impact Analysis
-
-↓
-
-AI Code Review
-
-↓
-
-Engineering Report
-```
-
----
-
-## Current Architecture
-
-```
-Git Repository
-      │
-      ▼
-Repository Intelligence
-      │
- ┌────┴─────────────┐
- │                  │
- ▼                  ▼
-Semantic Search   Graph Analysis
- │                  │
- ▼                  ▼
-Symbol Index   Dependency Analysis
- │                  │
- └──────────┬───────┘
-            ▼
-Repository Audit
-            ▼
-AI Code Review
-            ▼
-Engineering Report
-```
-
----
-
-## Technology Stack
-
-- Python
-- LangChain
-- LangGraph
-- Groq
-- FAISS
-- Hugging Face
-- GitPython
-- Tree-sitter
-- NetworkX
-- Pydantic
-
----
-
-## Project Structure
-
-```
-services/
+├── devmind/
+│   ├── __init__.py
+│   ├── __main__.py
+│   └── cli.py
 │
-├── architecture/
-├── audit/
-├── graph/
-├── review/
-├── models/
-├── parser/
-├── retriever/
-├── vectorstore/
-├── symbol_index/
-└── chat_session/
+├── services/
+│   ├── architecture/
+│   ├── audit/
+│   ├── graph/
+│   ├── models/
+│   ├── review/
+│   ├── parser/
+│   ├── retriever/
+│   ├── symbol_index/
+│   └── vectorstore/
+│
+├── tests/
+├── agent/
+├── api/
+├── ui/
+├── requirements.txt
+└── README.md
 
-tests/
 
-repositories/
+🛠️ Technology Stack
+Python
+LangChain
+LangGraph
+Groq
+RAG
+FAISS
+Hugging Face
+GitPython
+NetworkX
+Pydantic
+Python AST analysis
 
-docs/
-```
 
----
+Testing
 
-## Example Usage
-
-### Repository Chat
-
-```bash
-python -m tests.test_chat
-```
-
-### Repository Audit
-
-```bash
-python -m tests.test_repository_audit
-```
-
-### AI Code Review
-
-```bash
-python -m tests.test_code_reviewer
-```
-
-### Repository Health
-
-```bash
-python -m tests.test_repository_health
-```
-
-### Impact Analysis
-
-```bash
+python -m tests.test_graph_queries
 python -m tests.test_impact_analyzer
-```
+python -m tests.test_repository_health
+python -m tests.test_repository_audit
+python -m tests.test_code_reviewer
+python -m tests.test_repository_graph_builder
+python -m tests.test_circular_dependency_detector
+python -m tests.test_module_resolver
+python -m tests.test_analysis_result
 
----
 
-## Roadmap
+📊 Engineering Intelligence
 
-### ✅ v0.3.0
+DevMind is designed to answer questions such as:
 
-- AI Repository Chat
-- Repository Intelligence
-- Symbol Index
-- Repository Graph
-- Dependency Analysis
-- Reverse Dependency Graph
-- Circular Dependency Detection
-- Repository Health
-- Impact Analysis
-- Architecture Diagram
-- Mermaid Generator
-- AI Code Review
-- Repository Audit
-- Engineering Report Foundation
+What does this module depend on?
+What depends on this module?
+What will be affected if I change this file?
+Are there circular dependencies?
+Which modules are most connected?
+How healthy is this repository?
+What is the architecture of this codebase?
+What does this class or function actually do?
+Where are the potential engineering risks?
+How can this code be improved?
+🛣️ Roadmap
+✅ v0.4.0 — Core CLI Intelligence
+DevMind CLI
+Repository audit
+Repository health
+Dependency graph
+Reverse dependency analysis
+Circular dependency detection
+Change-impact analysis
+AI code review
+Symbol explanation
+Repository graph engine
+Architecture analysis
+Engineering recommendations
+🔜 v0.5.0
+GitHub Action
+Pull request analysis
+Git diff impact analysis
+VS Code extension
+REST API
+MCP server
+Multi-language repository support
+Machine-readable engineering reports
+🎯 Vision
 
-### 🚧 v0.4.0
+DevMind AI is being built toward an intelligent software engineering platform that understands software at the repository and system level, rather than only analyzing individual files.
 
-- DevMind CLI
-- Engineering Report Export
-- Markdown Export
-- JSON Export
-- HTML Export
-- PDF Export
+Code
+  ↓
+Symbols
+  ↓
+Modules
+  ↓
+Dependencies
+  ↓
+Architecture
+  ↓
+Change Impact
+  ↓
+Engineering Health
+  ↓
+AI Engineering Insights
 
-### 🔜 v0.5.0
+Understand repositories. Analyze architecture. Review code. Predict impact.
 
-- GitHub Action
-- VS Code Extension
-- REST API
-- MCP Server
-- Multi-language Support
-
----
-
-## Vision
-
-DevMind AI aims to become an intelligent software engineering companion that helps developers:
-
-- Understand unfamiliar codebases
-- Detect architectural issues
-- Review code intelligently
-- Measure engineering health
-- Generate engineering documentation
-- Improve software quality with AI
-
----
-
-## Contributing
+🤝 Contributing
 
 Contributions are welcome.
 
 Feel free to submit issues, feature requests, or pull requests.
 
----
 
-## License
-
-![Python](https://img.shields.io/badge/Python-3.13-blue)
-
-![LangChain](https://img.shields.io/badge/LangChain-1.3-green)
-
-![LangGraph](https://img.shields.io/badge/LangGraph-Latest-orange)
-
-![License](https://img.shields.io/badge/license-MIT-red)
-
-
+```bash
+python -m devmind --help
