@@ -95,7 +95,8 @@ DevMind provides a command-line interface for repository intelligence.
                     devmind-ai/
 
  Project Structure
-
+ 
+devmind-ai/
 ├── devmind/
 │   ├── __init__.py
 │   ├── __main__.py
@@ -118,7 +119,6 @@ DevMind provides a command-line interface for repository intelligence.
 ├── ui/
 ├── requirements.txt
 └── README.md
-
 
 🛠️ Technology Stack
 Python
