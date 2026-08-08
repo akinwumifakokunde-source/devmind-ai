@@ -7,7 +7,6 @@ class GraphQueries:
     """
 
     def __init__(self, graph: RepositoryGraph):
-
         self.graph = graph
 
     # ---------------------------------------------------------
@@ -15,7 +14,6 @@ class GraphQueries:
     # ---------------------------------------------------------
 
     def exists(self, module: str) -> bool:
-
         return module in self.graph.modules
 
     # ---------------------------------------------------------
@@ -23,7 +21,6 @@ class GraphQueries:
     # ---------------------------------------------------------
 
     def get(self, module: str):
-
         return self.graph.module(module)
 
     # ---------------------------------------------------------
@@ -31,7 +28,6 @@ class GraphQueries:
     # ---------------------------------------------------------
 
     def upstream(self, module: str):
-
         node = self.graph.module(module)
 
         if node is None:
@@ -44,13 +40,42 @@ class GraphQueries:
     # ---------------------------------------------------------
 
     def downstream(self, module: str):
+        """
+        Return modules that directly depend on the given module.
+
+        Supports both repository paths and Python module names.
+
+        Examples:
+            services/retriever.py
+            services.retriever
+        """
+
+        normalized = module.replace("\\", "/")
+
+        if normalized.endswith(".py"):
+            normalized = normalized[:-3]
+
+        normalized = normalized.replace("/", ".")
 
         result = []
 
         for node in self.graph.modules.values():
+            for imported in node.imports:
+                imported_normalized = imported.replace("\\", "/")
 
-            if module in node.imports:
-                result.append(node.name)
+                if imported_normalized.endswith(".py"):
+                    imported_normalized = imported_normalized[:-3]
+
+                imported_normalized = imported_normalized.replace(
+                    "/", "."
+                )
+
+                if (
+                    imported == module
+                    or imported_normalized == normalized
+                ):
+                    result.append(node.name)
+                    break
 
         return sorted(result)
 
@@ -59,7 +84,6 @@ class GraphQueries:
     # ---------------------------------------------------------
 
     def neighbors(self, module: str):
-
         return {
             "imports": self.upstream(module),
             "imported_by": self.downstream(module),
@@ -70,7 +94,6 @@ class GraphQueries:
     # ---------------------------------------------------------
 
     def statistics(self):
-
         total_imports = sum(
             len(node.imports)
             for node in self.graph.modules.values()
